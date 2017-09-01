@@ -2,8 +2,8 @@ void printf(char* str)
 {
     unsigned short* VideoMemory = (unsigned short*)0xb8000;
     
-    for(int i=0; str[i] != '\0'; i++)
-        VideoMemory[i] = (VideoMemory[i] & 0xFF00) || str[i];
+    for(int i=0; str[i] != '\0'; ++i)
+        VideoMemory[i] = (VideoMemory[i] & 0xFF00) | str[i];
 }
 
 typedef void (*constructor)();
@@ -17,7 +17,7 @@ extern "C" void callConstructors()
     }
 }
 
-extern "C" void kernelMain(void* multiboot_structure, unsigned int magicnumber)
+extern "C" void kernelMain(void* multiboot_structure, unsigned int /* magicnumber */)
 {
     printf("Hello World");
     printf("I Work");
