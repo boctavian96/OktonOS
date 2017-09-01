@@ -1,3 +1,11 @@
+/*
+***Okton OS Kernel***
+Version : 0.1
+Author : Octavian
+
+*/
+
+
 void printf(char* str)
 {
     unsigned short* VideoMemory = (unsigned short*)0xb8000;
@@ -19,7 +27,7 @@ extern "C" void callConstructors()
 
 extern "C" void kernelMain(void* multiboot_structure, unsigned int /* magicnumber */)
 {
-    printf("Hello World");
-    printf("I Work");
+    printf("Okton v0.1, Hello World, WORKS !!!");
     while(1);
 }
+
