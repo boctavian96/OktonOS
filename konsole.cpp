@@ -6,6 +6,8 @@ Author : Octavian
 
 */
 
+#include "io.h"
+
 void waitForInput()
 {
     getInput();
