@@ -51,7 +51,11 @@ GlobalDescriptorTable::SegmentDescriptor:SegmentDescriptr(uint32_t base, uint32_
 
     target[6] 0xC00;
     }
+    /*
+    
+    Anding an integer with 0xFF leaves only the least significant byte. For example, to get the first byte in a short s, you can write s & 0xFF. This is typically referred to as "masking". If byte1 is either a single byte type (like uint8_t) or is already less than 256 (and as a result is all zeroes except for the least significant byte) there is no need to mask out the higher bits, as they are already zero.
 
+    */
     //Encode the limit
     target[0] = limit & 0xFF;
     target[1] = (limit >> 8) & 0xFF;
