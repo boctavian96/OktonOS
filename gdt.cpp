@@ -4,11 +4,10 @@
 /*
 Constructor
 */
-GlobalDescriptorTable::GlobalDescriptorTable()
-    : nullSegmentSelector(0, 0, 0), 
+GlobalDescriptorTable::GlobalDescriptorTable() : /*nullSegmentSelector(0, 0, 0), 
         unusedSegmentSelector(0, 0, 0),
         codeSegmentSelector(0, 64*1024*1024, 0x9A),
-        dataSegmentSelector(0, 64*1024*1024, 0x92)
+        dataSegmentSelector(0, 64*1024*1024, 0x92)*/
 {
     uint32_t i[2];
     i[1] = (uint32_t)this;
@@ -33,7 +32,7 @@ uint16_t GlobalDescriptorTable::CodeSegmentSelector()
 }
 
 //Inner Class
-GlobalDescriptorTable::SegmentDescriptor:SegmentDescriptr(uint32_t base, uint32_t limit, uint8_t type)
+GlobalDescriptorTable::SegmentDescriptor::SegmentDescriptor(uint32_t base, uint32_t limit, uint8_t type)
 {
     uint8_t* target = (uint8_t*)this;
     
@@ -49,7 +48,7 @@ GlobalDescriptorTable::SegmentDescriptor:SegmentDescriptr(uint32_t base, uint32_
         else 
             limit = limit >> 12;
 
-    target[6] 0xC00;
+    target[6] = 0xC00;
     }
     /*
     
@@ -65,7 +64,7 @@ GlobalDescriptorTable::SegmentDescriptor:SegmentDescriptr(uint32_t base, uint32_
     target[2] = base & 0xFF;
     target[3] = (base >> 8) & 0xFF;
     target[4] = (base >> 16) & 0xFF;
-    target[7] = (base >> 24_ & 0xFF;
+    target[7] = (base >> 24) & 0xFF;
 
     //Type
     target[5] = type;
@@ -88,7 +87,7 @@ uint32_t GlobalDescriptorTable::SegmentDescriptor::Limit()
 {
     uint8_t* target = (uint8_t*)this;
 
-    uint32_t r = traget[6] & 0xF;
+    uint32_t r = target[6] & 0xF;
     r = (r << 8) + target[1];
     r = (r << 8) + target[0];
 

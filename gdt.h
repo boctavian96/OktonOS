@@ -21,7 +21,7 @@ class GlobalDescriptorTable
                 SegmentDescriptor(uint32_t base, uint32_t limit, uint8_t type);
                 uint32_t Base();
                 uint32_t Limit();
-        } __atribute__((packed));
+        } __atribute__ ((packed));
 
     private:
         SegmentDescriptor nullSegmentSelector;
