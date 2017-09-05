@@ -25,8 +25,13 @@ class Port8Bit : public Port
         static inline uint8_t Read8(uint16_t _port)
         {
                 uint8_t r;
-                __asm__ volatile("inb %1 %0" : "=a" (r) : "Nd" (_port));
+                __asm__ volatile("inb %1, %0" : "=a" (r) : "Nd" (_port));
                 return r;
+        }
+        
+        static inline void Write8(uint16_t _port, uint8_t _data)
+        {
+            __asm__ volatile("outb %0, %1" : : "a" (_data), "Nd" (_port));
         }
         
 };
@@ -82,13 +87,13 @@ class Port32Bit : public Port
         static inline uint32_t Read32(uint16_t _port)
         {
             uint32_t r;
-            __asm__ volatile("inl %1, %0" : "=a" (result) : "Nd" (_port));
+            __asm__ volatile("inl %1, %0" : "=a" (r) : "Nd" (_port));
             return r;
         }
         
         static inline void Write32(uint16_t _port, uint32_t _data)
         {
-            __asm__ volatile("out1 %0, %1" : : "a" (_data), "Nd" (_port));
+            __asm__ volatile("outl %0, %1" : : "a" (_data), "Nd" (_port));
         }
         
 };

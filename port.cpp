@@ -43,7 +43,7 @@ Port16Bit::~Port16Bit() {}
 
 void Port16Bit::Write(uint16_t data)
 {
-    Write16(portNumber);
+    Write16(portNumber, data);
 }
 
 uint16_t Port16Bit::Read()
