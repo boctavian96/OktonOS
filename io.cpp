@@ -1,10 +1,10 @@
-#include"types.h"
+#include "types.h"
 
-void printf(uint8_t* str)
+void printf(int8_t* str)
 {
     static uint16_t* VideoMemory = (uint16_t*) 0xb8000;
     static uint8_t x = 0;
-    statuc uint8_t y = 0;
+    static uint8_t y = 0;
 
     for(int i=0; str[i] != '\0'; i++)
     {
