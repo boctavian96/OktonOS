@@ -1,8 +1,0 @@
-[package]
-
-name = "okton_os"
-version = "0.0.1"
-authors = ["Octavian"]
-
-[lib]
-crate-type = ["staticlib"]
