@@ -6,12 +6,16 @@ GPPPARAMS = -m32 -fno-use-cxa-atexit -nostdlib -fno-builtin -fno-rtti -fno-excep
 ASPARAMS = --32
 LDPARAMS = -melf_i386
 
-objects = loader.o gdt.o kernel.o io.o port.o
+CPPDIR = src 
+OBJDIR = obj 
+INCDIR = includes
 
-%.o: %.cpp
+objects = loader.o gdt.o kernel.o io.o port.o interrupts.o interruptasm.o
+
+obj/%.o: src/%.cpp
 	g++ $(GPPPARAMS) -c -o $@ $<
 	
-%.o: %.s 
+obj/%.o: src/%.s
 	as $(ASPARAMS) -o $@ $<
 	
 mykernel.bin: linker.ld $(objects)
@@ -30,8 +34,11 @@ mykernel.iso: mykernel.bin
 	echo '	boot'			      >> iso/boot/grub/grub.cfg
 	echo '}'			      >> iso/boot/grub/grub.cfg
 	grub-mkrescue --output=mykernel.iso iso
+	cp mykernel.iso oktonOS/
+	rm mykernel.iso
 
 clean : 
+	rm $(objects)
 	rm -r iso
 	
 run : mykernel.iso
