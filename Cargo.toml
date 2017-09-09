@@ -1,8 +1,10 @@
 [package]
-
 name = "okton_os"
-version = "0.0.1"
-authors = ["Octavian"]
+version = "0.1.0"
+authors = ["Octavian <boctavian96@yahoo.com>"]
 
 [lib]
 crate-type = ["staticlib"]
+
+[dependencies]
+rlibc = "1.0"
