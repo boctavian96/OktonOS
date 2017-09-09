@@ -1,24 +1,31 @@
 arch ?= x86_64
+target ?= x86_64-okton_os
 kernel := build/kernel-$(arch).bin
 iso := build/os-$(arch).iso
-target ?= $(arch)-blog_os
-rust_os := target/$(target)/debug/libblog_os.a
 
+rust_os := target/$(target)/debug/libblog_os.a
 linker_script := src/arch/$(arch)/linker.ld
 grub_cfg := src/arch/$(arch)/grub.cfg
 assembly_source_files := $(wildcard src/arch/$(arch)/*.asm)
 assembly_object_files := $(patsubst src/arch/$(arch)/%.asm, \
 	build/arch/$(arch)/%.o, $(assembly_source_files))
 
-.PHONY: all clean run iso kernel
+.PHONY: all clean run debug iso cargo gdb
 
 all: $(kernel)
 
 clean:
-	@rm -r build
+	@cargo clean
+	@rm -rf build
 
 run: $(iso)
-	@qemu-system-x86_64 -cdrom $(iso)
+	@qemu-system-x86_64 -cdrom $(iso) -s
+
+debug: $(iso)
+	@qemu-system-x86_64 -cdrom $(iso) -s -S
+
+gdb:
+	@rust-os-gdb/bin/rust-gdb "build/kernel-x86_64.bin" -ex "target remote :1234"
 
 iso: $(iso)
 
@@ -29,11 +36,10 @@ $(iso): $(kernel) $(grub_cfg)
 	@grub-mkrescue -o $(iso) build/isofiles 2> /dev/null
 	@rm -r build/isofiles
 
-$(kernel): kernel $(rust_os) $(assembly_object_files) $(linker_script)
-	@ld -n --gc-sections -T $(linker_script) -o $(kernel) \
-		$(assembly_object_files) $(rust_os)
+$(kernel): cargo $(rust_os) $(assembly_object_files) $(linker_script)
+	@ld -n --gc-sections -T $(linker_script) -o $(kernel) $(assembly_object_files) $(rust_os)
 
-kernel:
+cargo:
 	@xargo build --target $(target)
 
 # compile assembly files
