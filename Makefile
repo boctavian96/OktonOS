@@ -11,10 +11,12 @@ OBJDIR = obj
 INCDIR = includes
 
 objects = obj/loader.o\
-	  obj/gdt.o\ obj/kernel.o\
-	  obj/io.o \
-	  obj/port.o \ obj/interrupts.o \
-	  obj/interruptasm.o
+	obj/gdt.o\
+	obj/kernel.o\
+	obj/io.o\
+	obj/port.o\
+	obj/interrupts.o\
+	obj/interruptsasm.o
 
 obj/%.o: src/%.cpp
 	g++ $(GPPPARAMS) -c -o $@ $<
