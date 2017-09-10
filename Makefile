@@ -2,7 +2,7 @@
 
 
 
-GPPPARAMS = -m32 -fno-use-cxa-atexit -nostdlib -fno-builtin -fno-rtti -fno-exceptions -fno-leading-underscore
+GPPPARAMS = -m32 -fno-use-cxa-atexit -Iinclude -nostdlib -fno-builtin -fno-rtti -fno-exceptions -fno-leading-underscore
 ASPARAMS = --32
 LDPARAMS = -melf_i386
 
@@ -10,7 +10,11 @@ CPPDIR = src
 OBJDIR = obj 
 INCDIR = includes
 
-objects = loader.o gdt.o kernel.o io.o port.o interrupts.o interruptasm.o
+objects = obj/loader.o\
+	  obj/gdt.o\ obj/kernel.o\
+	  obj/io.o \
+	  obj/port.o \ obj/interrupts.o \
+	  obj/interruptasm.o
 
 obj/%.o: src/%.cpp
 	g++ $(GPPPARAMS) -c -o $@ $<
