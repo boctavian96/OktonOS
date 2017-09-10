@@ -50,6 +50,9 @@ clean :
 run : mykernel.iso
 	(killall virtualbox && sleep 1) || true
 	virtualbox --startvm 'Okton 0.1' &
+	
+test : 
+	qemu-system-x86_64 -m 1024 -boot d -enable-kvm -smp 3 -net user -hda oktonOS/mykernel.iso -cdrom /home/octavian/GIT/OktonOS/oktonOS
 
 install: mykernel.bin
 
