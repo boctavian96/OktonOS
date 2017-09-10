@@ -52,6 +52,9 @@ Let's be short and clear :
 5. Submit a pull request ;)
 6. Be happy :D
 
+### Releases 
+* TBA
+
 ### License
 GNU General Public License
 
