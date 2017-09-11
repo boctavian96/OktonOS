@@ -13,7 +13,8 @@
         InterruptHandler(InterruptManager* interruptManager, uint8_t InterruptNumber);
         ~InterruptHandler();
     public:
-    }
+        virtual uint32_t HandleInterrupt(uint32_t esp);
+    };
     
 
     class InterruptManager
@@ -21,7 +22,7 @@
         friend class InterruptHandler;
         protected:
             
-            static InterruptManager* AIM;
+            static InterruptManager* AIM; //Active Interrupt Manager
             InterruptHandler* handlers[256];
 
             struct GateDescriptor
@@ -90,6 +91,7 @@
             static void HandleException0x13();
 
             static uint32_t HandleInterrupt(uint8_t interrupt, uint32_t esp);
+            uint32_t DoHandleInterrupt(uint8_t interrupt, uint32_t esp);
 
             Port8BitSlow programmableInterruptControllerMasterCommandPort;
             Port8BitSlow programmableInterruptControllerMasterDataPort;
