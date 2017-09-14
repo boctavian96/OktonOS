@@ -30,7 +30,7 @@ TO DO
 
 * Porting
 * Keyboard support
-* Mouse support [TD]
+* Mouse support
 * Console/ Terminal [TD] 
 * Networking [TD]
 * Memory Management [TD]
