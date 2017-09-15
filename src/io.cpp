@@ -44,3 +44,12 @@ void printf(int8_t* str)
         
     }
 }
+
+void printfHex(uint8_t key)
+{
+    char* tst = "00";
+    char* hex = "0123456789ABCDEF";
+    tst[0] = hex[(key >> 4) & 0xF];
+    tst[1] = hex[key & 0xF];
+    printf(tst);
+}
