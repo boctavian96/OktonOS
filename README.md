@@ -16,7 +16,7 @@ TO DO
 
 ### System Requirements 
 
-* Operating System : Linux (Recomanded : Linux Mint or Ubuntu)
+* Operating System : Linux (Recommended : Linux Mint or Ubuntu)
 * Ram : 2 GB 
 * HDD Space : 1 GB
 
