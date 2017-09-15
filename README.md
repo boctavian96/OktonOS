@@ -8,7 +8,7 @@ I do this because i want an OS only for gaming and i am really eager to learn ne
 * boctavian96 - boctavian96@yahoo.com - General 
 * adeleena - Terminal
 
-### Software Required
+### Required Software
 
 ```
 TO DO
