@@ -1,8 +1,14 @@
 
 #include "mouse.h"
 
-    MouseDriver::MouseDriver(InterruptManager* manager) : InterruptHandler(manager, 0x2C), dataport(0x60), commandport(0x64)
+    MouseDriver::MouseDriver(InterruptManager* manager, MouseEventHandler* handler) : InterruptHandler(manager, 0x2C), dataport(0x60), commandport(0x64)
     {
+        
+        this->handler = handler;
+    
+    }
+        
+        
             uint16_t* VideoMemory = (uint16_t*)0xb8000;
             offset=0;
             buttons=0;
@@ -59,6 +65,33 @@
             }
             
         return esp;
+    }
+    
+    //Mouse Event Handler 
+    
+    MouseEventHandler::MouseEventHandler()
+    {
+        
+    }
+    
+    void MouseEventHandler::OnActivate()
+    {
+        
+    }
+    
+    void MouseEventHandler::OnMouseDown(uint8_t button)
+    {
+        
+    }
+    
+    void MouseEventHandler::OnMouseUp(uint8_t button)
+    {
+        
+    }
+    
+    void MouseEventHandler::OnMouseMove(int x, int y)
+    {
+        
     }
     
     
