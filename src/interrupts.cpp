@@ -1,5 +1,6 @@
 #include "interrupts.h"
 #include "io.h"
+#include "types.h"
 
 
 void printf(char* str);

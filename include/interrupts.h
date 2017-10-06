@@ -5,6 +5,8 @@
     #include "types.h"
     #include "port.h"
     
+    class InterruptManager;
+    
     class InterruptHandler
     {
     protected:
