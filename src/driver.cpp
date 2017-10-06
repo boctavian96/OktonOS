@@ -17,7 +17,7 @@ void Driver::Activate()
 
 }
 
-uint32_t Driver::Reset()
+int32_t Driver::Reset()
 {
     return 0;
 }
@@ -36,7 +36,7 @@ DriverManager::DriverManager()
 
 void DriverManager::AddDriver(Driver* d)
 {
-    drivers[numDrivers] = drv;
+    drivers[numDrivers] = d;
     numDrivers++;
 }
 
