@@ -16,7 +16,9 @@ objects = obj/loader.o\
 	obj/io.o\
 	obj/port.o\
 	obj/interrupts.o\
-	obj/interruptsasm.o
+	obj/interruptsasm.o\
+	obj/mouse.o\
+	obj/keyboard.o
 
 obj/%.o: src/%.cpp
 	g++ $(GPPPARAMS) -c -o $@ $<
