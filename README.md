@@ -1,5 +1,7 @@
 # OktonOS
 Okton : A Operating system for gaming <br />
+This project in inspired from wyoos.org and from linux <br />
+
 I work on this project on free time so i call it a "Hobby Operating System".
 I do this because i want an OS only for gaming and i am really eager to learn new things about operating systems
 
@@ -32,9 +34,9 @@ TO DO
 * Keyboard support
 * Mouse support
 * Console/ Terminal [TD] 
-* Networking [TD]
-* Memory Management [TD]
-* Multithreading [TD]
+* Networking
+* Memory Management 
+* Multithreading
 * Filesystem [TD]
 
 ### Versioning
