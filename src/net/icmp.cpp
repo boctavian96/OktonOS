@@ -1,10 +1,9 @@
-
 #include <net/icmp.h>
+#include <kprintf.h>
 
 using namespace myos;
 using namespace myos::common;
 using namespace myos::net;
-
  
 InternetControlMessageProtocol::InternetControlMessageProtocol(InternetProtocolProvider* backend)
 : InternetProtocolHandler(backend, 0x01)
@@ -14,9 +13,7 @@ InternetControlMessageProtocol::InternetControlMessageProtocol(InternetProtocolP
 InternetControlMessageProtocol::~InternetControlMessageProtocol()
 {
 }
-            
-void printf(char*);
-void printfHex(uint8_t);
+
 bool InternetControlMessageProtocol::OnInternetProtocolReceived(common::uint32_t srcIP_BE, common::uint32_t dstIP_BE,
                                             common::uint8_t* internetprotocolPayload, common::uint32_t size)
 {
@@ -29,11 +26,11 @@ bool InternetControlMessageProtocol::OnInternetProtocolReceived(common::uint32_t
     {
         
         case 0:
-            printf("ping response from "); printfHex(srcIP_BE & 0xFF);
-            printf("."); printfHex((srcIP_BE >> 8) & 0xFF);
-            printf("."); printfHex((srcIP_BE >> 16) & 0xFF);
-            printf("."); printfHex((srcIP_BE >> 24) & 0xFF);
-            printf("\n");
+            kprintf("ping response from "); kprintfHex(srcIP_BE & 0xFF);
+            kprintf("."); kprintfHex((srcIP_BE >> 8) & 0xFF);
+            kprintf("."); kprintfHex((srcIP_BE >> 16) & 0xFF);
+            kprintf("."); kprintfHex((srcIP_BE >> 24) & 0xFF);
+            kprintf("\n");
             break;
             
         case 8:

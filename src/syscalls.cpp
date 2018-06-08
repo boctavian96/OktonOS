@@ -1,5 +1,6 @@
 
 #include <syscalls.h>
+#include <kprintf.h>
  
 using namespace myos;
 using namespace myos::common;
@@ -25,7 +26,7 @@ uint32_t SyscallHandler::HandleInterrupt(uint32_t esp)
     switch(cpu->eax)
     {
         case 4:
-            printf((char*)cpu->ebx);
+            kprintf((char*)cpu->ebx);
             break;
             
         default:

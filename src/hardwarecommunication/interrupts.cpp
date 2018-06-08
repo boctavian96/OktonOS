@@ -1,15 +1,10 @@
 
 #include <hardwarecommunication/interrupts.h>
+#include <kprintf.h>
+
 using namespace myos;
 using namespace myos::common;
 using namespace myos::hardwarecommunication;
-
-
-void printf(char* str);
-void printfHex(uint8_t);
-
-
-
 
 
 InterruptHandler::InterruptHandler(InterruptManager* interruptManager, uint8_t InterruptNumber)
@@ -30,20 +25,8 @@ uint32_t InterruptHandler::HandleInterrupt(uint32_t esp)
     return esp;
 }
 
-
-
-
-
-
-
-
-
-
 InterruptManager::GateDescriptor InterruptManager::interruptDescriptorTable[256];
 InterruptManager* InterruptManager::ActiveInterruptManager = 0;
-
-
-
 
 void InterruptManager::SetInterruptDescriptorTableEntry(uint8_t interrupt,
     uint16_t CodeSegment, void (*handler)(), uint8_t DescriptorPrivilegeLevel, uint8_t DescriptorType)
@@ -58,7 +41,6 @@ void InterruptManager::SetInterruptDescriptorTableEntry(uint8_t interrupt,
     interruptDescriptorTable[interrupt].access = IDT_DESC_PRESENT | ((DescriptorPrivilegeLevel & 3) << 5) | DescriptorType;
     interruptDescriptorTable[interrupt].reserved = 0;
 }
-
 
 InterruptManager::InterruptManager(uint16_t hardwareInterruptOffset, GlobalDescriptorTable* globalDescriptorTable, TaskManager* taskManager)
     : programmableInterruptControllerMasterCommandPort(0x20),
@@ -176,7 +158,6 @@ uint32_t InterruptManager::HandleInterrupt(uint8_t interrupt, uint32_t esp)
     return esp;
 }
 
-
 uint32_t InterruptManager::DoHandleInterrupt(uint8_t interrupt, uint32_t esp)
 {
     if(handlers[interrupt] != 0)
@@ -185,8 +166,8 @@ uint32_t InterruptManager::DoHandleInterrupt(uint8_t interrupt, uint32_t esp)
     }
     else if(interrupt != hardwareInterruptOffset)
     {
-        printf("UNHANDLED INTERRUPT 0x");
-        printfHex(interrupt);
+        kprintf("UNHANDLED INTERRUPT 0x");
+        kprintfHex(interrupt);
     }
     
     if(interrupt == hardwareInterruptOffset)
