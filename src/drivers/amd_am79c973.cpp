@@ -1,5 +1,7 @@
 
 #include <drivers/amd_am79c973.h>
+#include <kprintf.h>
+
 using namespace myos;
 using namespace myos::common;
 using namespace myos::drivers;
@@ -28,13 +30,6 @@ void RawDataHandler::Send(uint8_t* buffer, uint32_t size)
 {
     backend->Send(buffer, size);
 }
-
-
-
-
-
-void printf(char*);
-void printfHex(uint8_t);
 
 
 amd_am79c973::amd_am79c973(PeripheralComponentInterconnectDeviceDescriptor *dev, InterruptManager* interrupts)
@@ -143,18 +138,18 @@ uint32_t amd_am79c973::HandleInterrupt(common::uint32_t esp)
     registerAddressPort.Write(0);
     uint32_t temp = registerDataPort.Read();
     
-    if((temp & 0x8000) == 0x8000) printf("AMD am79c973 ERROR\n");
-    if((temp & 0x2000) == 0x2000) printf("AMD am79c973 COLLISION ERROR\n");
-    if((temp & 0x1000) == 0x1000) printf("AMD am79c973 MISSED FRAME\n");
-    if((temp & 0x0800) == 0x0800) printf("AMD am79c973 MEMORY ERROR\n");
+    if((temp & 0x8000) == 0x8000) kprintf("AMD am79c973 ERROR\n");
+    if((temp & 0x2000) == 0x2000) kprintf("AMD am79c973 COLLISION ERROR\n");
+    if((temp & 0x1000) == 0x1000) kprintf("AMD am79c973 MISSED FRAME\n");
+    if((temp & 0x0800) == 0x0800) kprintf("AMD am79c973 MEMORY ERROR\n");
     if((temp & 0x0400) == 0x0400) Receive();
-    if((temp & 0x0200) == 0x0200) printf(" SENT");
+    if((temp & 0x0200) == 0x0200) kprintf(" SENT");
                                
     // acknoledge
     registerAddressPort.Write(0);
     registerDataPort.Write(temp);
     
-    if((temp & 0x0100) == 0x0100) printf("AMD am79c973 INIT DONE\n");
+    if((temp & 0x0100) == 0x0100) kprintf("AMD am79c973 INIT DONE\n");
     
     return esp;
 }
@@ -173,11 +168,11 @@ void amd_am79c973::Send(uint8_t* buffer, int size)
                 src >= buffer; src--, dst--)
         *dst = *src;
         
-    printf("\nSEND: ");
+    kprintf("\nSEND: ");
     for(int i = 14+20; i < (size>64?64:size); i++)
     {
-        printfHex(buffer[i]);
-        printf(" ");
+        kprintfHex(buffer[i]);
+        kprintf(" ");
     }
     
     sendBufferDescr[sendDescriptor].avail = 0;
@@ -190,7 +185,7 @@ void amd_am79c973::Send(uint8_t* buffer, int size)
 
 void amd_am79c973::Receive()
 {
-    printf("\nRECV: ");
+    kprintf("\nRECV: ");
     
     for(; (recvBufferDescr[currentRecvBuffer].flags & 0x80000000) == 0;
         currentRecvBuffer = (currentRecvBuffer + 1) % 8)
@@ -207,8 +202,8 @@ void amd_am79c973::Receive()
 
             for(int i = 14+20; i < (size>64?64:size); i++)
             {
-                printfHex(buffer[i]);
-                printf(" ");
+                kprintfHex(buffer[i]);
+                kprintf(" ");
             }
 
             if(handler != 0)

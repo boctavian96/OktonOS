@@ -1,12 +1,9 @@
 #include <drivers/ata.h>
+#include <kprintf.h>
 
 using namespace myos;
 using namespace myos::common;
 using namespace myos::drivers;
-
-
-void printf(char* str);
-void printfHex(uint8_t);
 
 AdvancedTechnologyAttachment::AdvancedTechnologyAttachment(bool master, common::uint16_t portBase)
 :   dataPort(portBase),
@@ -55,7 +52,7 @@ void AdvancedTechnologyAttachment::Identify()
         
     if(status & 0x01)
     {
-        printf("ERROR");
+        kprintf("ERROR");
         return;
     }
     
@@ -65,9 +62,9 @@ void AdvancedTechnologyAttachment::Identify()
         char *text = "  \0";
         text[0] = (data >> 8) & 0xFF;
         text[1] = data & 0xFF;
-        printf(text);
+        kprintf(text);
     }
-    printf("\n");
+    kprintf("\n");
 }
 
 void AdvancedTechnologyAttachment::Read28(common::uint32_t sectorNum, int count)
@@ -90,12 +87,12 @@ void AdvancedTechnologyAttachment::Read28(common::uint32_t sectorNum, int count)
         
     if(status & 0x01)
     {
-        printf("ERROR");
+        kprintf("ERROR");
         return;
     }
     
     
-    printf("Reading ATA Drive: ");
+    kprintf("Reading ATA Drive: ");
     
     for(int i = 0; i < count; i += 2)
     {
@@ -109,7 +106,7 @@ void AdvancedTechnologyAttachment::Read28(common::uint32_t sectorNum, int count)
         else
             text[1] = '\0';
         
-        printf(text);
+        kprintf(text);
     }    
     
     for(int i = count + (count%2); i < 512; i += 2)
@@ -133,7 +130,7 @@ void AdvancedTechnologyAttachment::Write28(common::uint32_t sectorNum, common::u
     commandPort.Write(0x30);
     
     
-    printf("Writing to ATA Drive: ");
+    kprintf("Writing to ATA Drive: ");
 
     for(int i = 0; i < count; i += 2)
     {
@@ -145,7 +142,7 @@ void AdvancedTechnologyAttachment::Write28(common::uint32_t sectorNum, common::u
         char *text = "  \0";
         text[0] = (wdata >> 8) & 0xFF;
         text[1] = wdata & 0xFF;
-        printf(text);
+        kprintf(text);
     }
     
     for(int i = count + (count%2); i < 512; i += 2)
@@ -168,7 +165,7 @@ void AdvancedTechnologyAttachment::Flush()
         
     if(status & 0x01)
     {
-        printf("ERROR");
+        kprintf("ERROR");
         return;
     }
 }

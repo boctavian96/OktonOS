@@ -30,6 +30,7 @@ objects = obj/loader.o \
           obj/net/icmp.o \
           obj/net/udp.o \
           obj/net/tcp.o \
+	  obj/kprintf.o \
           obj/kernel.o
 
 
@@ -64,7 +65,7 @@ mykernel.iso: mykernel.bin
 	rm -rf iso
 
 install: mykernel.bin
-	sudo cp $< /boot/mykernel.bin
+	cp $< /boot/mykernel.bin
 
 .PHONY: clean
 clean:

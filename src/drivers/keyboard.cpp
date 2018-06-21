@@ -1,5 +1,5 @@
-
 #include <drivers/keyboard.h>
+#include <kprintf.h>
 
 using namespace myos::common;
 using namespace myos::drivers;
@@ -33,9 +33,6 @@ commandport(0x64)
 KeyboardDriver::~KeyboardDriver()
 {
 }
-
-void printf(char*);
-void printfHex(uint8_t);
 
 void KeyboardDriver::Activate()
 {
@@ -108,8 +105,8 @@ uint32_t KeyboardDriver::HandleInterrupt(uint32_t esp)
 
             default:
             {
-                printf("KEYBOARD 0x");
-                printfHex(key);
+                kprintf("KEYBOARD 0x");
+                kprintfHex(key);
                 break;
             }
         }
