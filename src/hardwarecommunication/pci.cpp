@@ -164,11 +164,9 @@ Driver* PeripheralComponentInterconnectController::GetDriver(PeripheralComponent
             {
                 case 0x2000: // am79c973
                     kprintf("AMD am79c973 ");
-                    driver = (amd_am79c973*)MemoryManager::activeMemoryManager->malloc(sizeof(amd_am79c973));
+                    driver = (Driver*)MemoryManager::activeMemoryManager->malloc(sizeof(amd_am79c973));
                     if(driver != 0)
                         new (driver) amd_am79c973(&dev, interrupts);
-                    else
-                        kprintf("instantiation failed");
                     return driver;
                     break;
             }
@@ -192,7 +190,7 @@ Driver* PeripheralComponentInterconnectController::GetDriver(PeripheralComponent
     }
     
     
-    return driver;
+    return 0;
 }
 
 

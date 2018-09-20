@@ -10,6 +10,7 @@
 #include <drivers/mouse.h>
 #include <drivers/vga.h>
 #include <drivers/ata.h>
+#include <fs/msdospart.h>
 #include <gui/desktop.h>
 #include <gui/window.h>
 #include <multitasking.h>
@@ -27,9 +28,9 @@
 using namespace myos;
 using namespace myos::common;
 using namespace myos::drivers;
+using namespace myos::fs;
 using namespace myos::hardwarecommunication;
 using namespace myos::gui;
-using namespace myos::net;
 
 class PrintfKeyboardEventHandler : public KeyboardEventHandler
 {
@@ -78,73 +79,19 @@ public:
     
 };
 
-class PrintfUDPHandler : public UserDatagramProtocolHandler
-{
-public:
-    void HandleUserDatagramProtocolMessage(UserDatagramProtocolSocket* socket, common::uint8_t* data, common::uint16_t size)
-    {
-        char* foo = " ";
-        for(int i = 0; i < size; i++)
-        {
-            foo[0] = data[i];
-            kprintf(foo);
-        }
-    }
-};
 
 
-class PrintfTCPHandler : public TransmissionControlProtocolHandler
-{
-public:
-    bool HandleTransmissionControlProtocolMessage(TransmissionControlProtocolSocket* socket, common::uint8_t* data, common::uint16_t size)
-    {
-        char* foo = " ";
-        for(int i = 0; i < size; i++)
-        {
-            foo[0] = data[i];
-            kprintf(foo);
-        }
-        
-        
-        
-        if(size > 9
-            && data[0] == 'G'
-            && data[1] == 'E'
-            && data[2] == 'T'
-            && data[3] == ' '
-            && data[4] == '/'
-            && data[5] == ' '
-            && data[6] == 'H'
-            && data[7] == 'T'
-            && data[8] == 'T'
-            && data[9] == 'P'
-        )
-        {
-            socket->Send((uint8_t*)"HTTP/1.1 200 OK\r\nServer: MyOS\r\nContent-Type: text/html\r\n\r\n<html><head><title>My Operating System</title></head><body><b>My Operating System</b> http://www.AlgorithMan.de</body></html>\r\n",184);
-            socket->Disconnect();
-        }
-        
-        
-        return true;
-    }
-};
 
-
-void sysprintf(char* str)
-{
-    asm("int $0x80" : : "a" (4), "b" (str));
-}
 
 void taskA()
 {
     while(true)
-        sysprintf("A");
+        kprintf("A");
 }
-
 void taskB()
 {
     while(true)
-        sysprintf("B");
+        kprintf("B");
 }
 
 
@@ -162,6 +109,9 @@ extern "C" void callConstructors()
 }
 
 
+extern "C" void* heap;
+
+
 
 extern "C" void kernelMain(const void* multiboot_structure, uint32_t /*multiboot_magic*/)
 {
@@ -170,22 +120,21 @@ extern "C" void kernelMain(const void* multiboot_structure, uint32_t /*multiboot
     GlobalDescriptorTable gdt;
     
     
-    uint32_t* memupper = (uint32_t*)(((size_t)multiboot_structure) + 8);
-    size_t heap = 10*1024*1024;
-    MemoryManager memoryManager(heap, (*memupper)*1024 - heap - 10*1024);
+    uint32_t* memupper = (uint32_t*)(multiboot_structure+8);
+    MemoryManager memoryManager((size_t)&heap, (*memupper)*1024 - (size_t)&heap - 10*1024);
     
-    kprintf("heap: 0x");
-    kprintfHex((heap >> 24) & 0xFF);
-    kprintfHex((heap >> 16) & 0xFF);
-    kprintfHex((heap >> 8 ) & 0xFF);
-    kprintfHex((heap      ) & 0xFF);
     
-    void* allocated = memoryManager.malloc(1024);
+    kprintf("\nheap: 0x");
+    kprintfHex( ((size_t)&heap >> 24) & 0xFF );
+    kprintfHex( ((size_t)&heap >> 16) & 0xFF );
+    kprintfHex( ((size_t)&heap >> 8) & 0xFF );
+    kprintfHex(  (size_t)&heap & 0xFF );
     kprintf("\nallocated: 0x");
-    kprintfHex(((size_t)allocated >> 24) & 0xFF);
-    kprintfHex(((size_t)allocated >> 16) & 0xFF);
-    kprintfHex(((size_t)allocated >> 8 ) & 0xFF);
-    kprintfHex(((size_t)allocated      ) & 0xFF);
+    void* test = memoryManager.malloc(1024);
+    kprintfHex( (((size_t)test) >> 24) & 0xFF );
+    kprintfHex( (((size_t)test) >> 16) & 0xFF );
+    kprintfHex( (((size_t)test) >> 8) & 0xFF );
+    kprintfHex( ((size_t)test) & 0xFF );
     kprintf("\n");
     
     TaskManager taskManager;
@@ -197,7 +146,6 @@ extern "C" void kernelMain(const void* multiboot_structure, uint32_t /*multiboot
     */
     
     InterruptManager interrupts(0x20, &gdt, &taskManager);
-    SyscallHandler syscalls(&interrupts, 0x80);
     
     kprintf("Initializing Hardware, Stage 1\n");
     
@@ -227,9 +175,7 @@ extern "C" void kernelMain(const void* multiboot_structure, uint32_t /*multiboot
         PeripheralComponentInterconnectController PCIController;
         PCIController.SelectDrivers(&drvManager, &interrupts);
 
-        #ifdef GRAPHICSMODE
-            VideoGraphicsArray vga;
-        #endif
+        VideoGraphicsArray vga;
         
     kprintf("Initializing Hardware, Stage 2\n");
         drvManager.ActivateAll();
@@ -244,90 +190,41 @@ extern "C" void kernelMain(const void* multiboot_structure, uint32_t /*multiboot
         desktop.AddChild(&win2);
     #endif
 
-
-    /*
-    printf("\nS-ATA primary master: ");
-    AdvancedTechnologyAttachment ata0m(true, 0x1F0);
+        
+    // interrupt 14
+    AdvancedTechnologyAttachment ata0m(0x1F0, true);
+    kprintf("ATA Primary Master: ");
     ata0m.Identify();
     
-    printf("\nS-ATA primary slave: ");
-    AdvancedTechnologyAttachment ata0s(false, 0x1F0);
+    AdvancedTechnologyAttachment ata0s(0x1F0, false);
+    kprintf("ATA Primary Slave: ");
     ata0s.Identify();
-    ata0s.Write28(0, (uint8_t*)"http://www.AlgorithMan.de", 25);
-    ata0s.Flush();
-    ata0s.Read28(0, 25);
     
-    printf("\nS-ATA secondary master: ");
-    AdvancedTechnologyAttachment ata1m(true, 0x170);
-    ata1m.Identify();
     
-    printf("\nS-ATA secondary slave: ");
-    AdvancedTechnologyAttachment ata1s(false, 0x170);
-    ata1s.Identify();
+    kprintf("\n\n\n\n\n\n\n\n");
+    MSDOSPartitionTable::ReadPartitions(&ata0s);
+    
+    
+    //char* atabuffer = "http://AlgorithMan.de";
+    //ata0s.Write28(0, (uint8_t*)atabuffer,21);
+    //ata0s.Flush();
+    
+    //ata0s.Read28(0, (uint8_t*)atabuffer,21);
+    
+    // interrupt 15
+    AdvancedTechnologyAttachment ata1m(0x170, true);
+    AdvancedTechnologyAttachment ata1s(0x170, false);
+        
+    
     // third: 0x1E8
     // fourth: 0x168
-    */
-    
 
-                 
-
-                   
+        /*
     amd_am79c973* eth0 = (amd_am79c973*)(drvManager.drivers[2]);
+    eth0->Send((uint8_t*)"Hello Network", 13);
+        */
 
-    
-    // IP Address
-    uint8_t ip1 = 10, ip2 = 0, ip3 = 2, ip4 = 15;
-    uint32_t ip_be = ((uint32_t)ip4 << 24)
-                | ((uint32_t)ip3 << 16)
-                | ((uint32_t)ip2 << 8)
-                | (uint32_t)ip1;
-    eth0->SetIPAddress(ip_be);
-    EtherFrameProvider etherframe(eth0);
-    AddressResolutionProtocol arp(&etherframe);    
-
-    
-    // IP Address of the default gateway
-    uint8_t gip1 = 10, gip2 = 0, gip3 = 2, gip4 = 2;
-    uint32_t gip_be = ((uint32_t)gip4 << 24)
-                   | ((uint32_t)gip3 << 16)
-                   | ((uint32_t)gip2 << 8)
-                   | (uint32_t)gip1;
-    
-    uint8_t subnet1 = 255, subnet2 = 255, subnet3 = 255, subnet4 = 0;
-    uint32_t subnet_be = ((uint32_t)subnet4 << 24)
-                   | ((uint32_t)subnet3 << 16)
-                   | ((uint32_t)subnet2 << 8)
-                   | (uint32_t)subnet1;
-                   
-    InternetProtocolProvider ipv4(&etherframe, &arp, gip_be, subnet_be);
-    InternetControlMessageProtocol icmp(&ipv4);
-    UserDatagramProtocolProvider udp(&ipv4);
-    TransmissionControlProtocolProvider tcp(&ipv4);
-    
-    
     interrupts.Activate();
-
-    kprintf("\n\n\n\n");
-    
-    arp.BroadcastMACAddress(gip_be);
-    
-    
-    PrintfTCPHandler tcphandler;
-    TransmissionControlProtocolSocket* tcpsocket = tcp.Listen(1234);
-    tcp.Bind(tcpsocket, &tcphandler);
-    //tcpsocket->Send((uint8_t*)"Hello TCP!", 10);
-
-    
-    //icmp.RequestEchoReply(gip_be);
-    
-    //PrintfUDPHandler udphandler;
-    //UserDatagramProtocolSocket* udpsocket = udp.Connect(gip_be, 1234);
-    //udp.Bind(udpsocket, &udphandler);
-    //udpsocket->Send((uint8_t*)"Hello UDP!", 10);
-    
-    //UserDatagramProtocolSocket* udpsocket = udp.Listen(1234);
-    //udp.Bind(udpsocket, &udphandler);
-
     
     while(1)
     {

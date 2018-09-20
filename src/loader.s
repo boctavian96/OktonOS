@@ -12,7 +12,7 @@
 .extern kernelMain
 .extern callConstructors
 .global loader
-
+.global heap
 
 loader:
     mov $kernel_stack, %esp
@@ -32,3 +32,5 @@ _stop:
 .space 2*1024*1024; # 2 MiB
 kernel_stack:
 
+.space 10*1024; # 10 KiB Padding
+heap:
