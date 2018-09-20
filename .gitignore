@@ -1,0 +1,7 @@
+.codelite/
+# KDE
+.directory
+OktonOS.project
+OktonOS.workspace
+mykernel.iso
+obj/
